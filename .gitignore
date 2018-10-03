@@ -6,3 +6,6 @@
 !*.svg
 !*.eps
 !*.gitignore
+!*.pdf
+!*.aux
+!*.bib
