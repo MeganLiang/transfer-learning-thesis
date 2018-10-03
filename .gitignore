@@ -7,5 +7,5 @@
 !*.eps
 !*.gitignore
 !*.pdf
-!*.aux
+!*.tex
 !*.bib
