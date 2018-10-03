@@ -1,0 +1,8 @@
+*
+!*.bib
+!*/
+!*.png
+!*.jpg
+!*.svg
+!*.eps
+!*.gitignore
