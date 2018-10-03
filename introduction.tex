@@ -13,7 +13,7 @@ DNNs are difficult to interpret where learned high-level features cannot be extr
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=50mm, scale=0.5]{similar5.png}
+		\includegraphics[width=30mm, scale=0.5]{similar5.png}
 		\caption{Examples of two handwritten digit extracted from \cite{mnist}. In terms of pixel-to-pixel comparisons, these two images are different. As a human, the shapes appear similar where humans can recognise the images as fives.}
 		\label{fig:similar5}
 	\end{center}
@@ -40,36 +40,35 @@ Features gathered with feature selection and feature construction methods will b
 \section{Objectives} \label{subsec:obj}
 The problems in the project can be broken down into 3 main objectives. The objectives are achieved when the criteria defined is met.
 
+The goal is to create methods for extracting and integrating features from layers in a DNN as input features to a LCS to determine if this will enhance the performance on solving classification problems compared to raw features selected by the LCS. The performance of the system will be evaluated on standard data mining benchmark datasets and will be measured on criteria such as accuracy, fitness and the solution\textquotesingle s generality (see Section \ref{sec:eval} for definitions).
+ 
 
 \begin{enumerate}
-	\item  The goal is to create methods for extracting and integrating features from layers in a DNN as input features to a LCS to determine if this will enhance the performance on solving classification problems compared to raw features selected by the LCS. The performance will be evaluated on standard data mining benchmark datasets and will be measured on criteria such as accuracy, fitness and the solution\textquotesingle s generality (see Section \ref{sec:eval} for definitions). This will be achieved when these sub-objectives are completed:
+	\item  Evaluate and investigate LCS and CNN individually. This will be achieved when these sub-objectives are completed:
 	
 	\begin{enumerate}
-		\item Evaluate the performance of a LCS on benchmark datasets such as Breast Cancer Wisconsin \cite{wisconsinbreast} and Zoo Data Set \cite{zoodata}. Refer to Section \ref{subsec:datasets} for the explanations of why these datasets are used. Evaluation will be measured on criteria such as accuracy.
-		\item Create a bespoke image shape dataset. The dataset will contain simple shapes without confounding variables which introduce ambiguity and distraction. Using existing image datasets such as imagenet \cite{imagenet} will increase the complexity of analysing whether the features extracted will convey a rich meaning. The dataset will be evaluated on a CNN for shape classification where evaluation is measured on the accuracy of the training and test sets.
-		\item Evaluate whether features extracted from the CNN can be reused by evaluating on our benchmark datasets as well as external benchmarks such as MNIST to determine whether the features extracted convey a rich meaning.
+		\item Evaluate the performance of LCS on benchmark datasets such as Breast Cancer Wisconsin \cite{wisconsinbreast} and Zoo Data Set \cite{zoodata}. Refer to Section \ref{subsec:datasets} for the explanations of why these datasets are used. Evaluation will be measured on the criteria of accuracy, fitness and the solution's generality.
+		\item Evaluate and analyse the rules outputted by the LCS to ensure that the rules are human readable.
+		
+		\item Create a bespoke image shape dataset. The dataset will contain simple shapes without confounding variables which introduce ambiguity and distraction. Using existing image datasets such as ImageNet \cite{imagenet} will increase the complexity of analysing whether the features extracted will convey a rich meaning. The dataset will be evaluated on a CNN for shape classification where evaluation is measured by the accuracy of the unseen test set.
+		
+		\item Evaluate whether features extracted from the CNN can be reused by evaluating on datasets which contain simple shapes such as the MNIST dataset to determine whether the features extracted convey a rich meaning.
 		
 	\end{enumerate}
 	
-	\item  The goal is to apply methods for feature selection with feature construction on LCSs where features are selected by a LCS and then constructed manually. The performance will be evaluated on standard data mining benchmark datasets and will be measured on criteria such as accuracy, fitness and the solution\textquotesingle s generality. This is to be achieved by mid-August 2018 and will be achieved when these sub-objectives are completed:
-	\begin{enumerate}
-		\item Create bespoke image datasets with more complex combinations of shapes such as cups where the data set is building on the dataset from the first objective.
-		
-		\item Construct embedded, filter or wrapper feature selection methods. These feature selection methods are defined as methods which embed the selection within the basic induction algorithm, methods which use feature selection to filter features passed to induction, and methods that treat feature selection as a wrapper around the induction process \cite{blum1997selection}.
-		
-		\item Evaluate these methods against the raw feature benchmarks. Evaluation will be measured on accuracy, fitness and the solution\textquotesingle s generality. 
-		
-	\end{enumerate}
+	\item  Integrate extracted features from CNN to the LCS. This will be achieved when these sub-objectives are completed:
 	
-	\item The goal is to implement methods for feature construction based on code fragments constructed by the LCS applied to autonomous computer vision classification problems, where the performance will be evaluated on standard data mining benchmark datasets and will be measured on criteria such as accuracy, fitness and the solution\textquotesingle s generality. This is to be achieved by the end of September 2018 and will be achieved when these sub-objectives are completed:
 	\begin{enumerate}
-		\item Construct feature construction methods which will further improve the accuracy, fitness or the solution\textquotesingle s generality. Feature construction methods can be used to learn more precise decision boundaries.
+		\item Create synthetic image datasets with more complex combinations of shapes. Objects include cups, spoons, forks, donuts and vases. The dataset will be used to evaluate whether the combined system can classify the dataset at a reasonable accuracy and can output human readable rules that are general.  
 		
-		\item Source image datasets relating to real world images and situations such as imagenet \cite{imagenet}.
-	
+		\item Refine the system to improve the accuracy: involves filters before and math after
+		\item Develop feature construction methods which will further improve the accuracy, fitness or the solution\textquotesingle s generality. Feature construction methods can be used to learn more precise decision boundaries.
+		
+		\item Source image datasets relating to real world images and situations such as ImageNet \cite{imagenet}.
+		
 		\item Evaluate the classifier system with feature selection and feature construction using measurement criteria such as accuracy, fitness and the solution\textquotesingle s generality.
-		
 	\end{enumerate}
+		
 	
 \end{enumerate}
 \chapter{Background}
@@ -245,14 +244,34 @@ Instead of using a validation set, a collection of instances used in the trainin
 The first objective mentioned in Section \ref{subsec:obj} has been implemented. The goal was to create methods for extracting and integrating features from layers in a DNN as input features to the LCS. This will determine whether the higher-level features extracted could enhance the performance on solving classification problems compared to raw features selected by the LCS. 
 
 [NOTE: ADD ERROR BARS TO ALL FINDINGS]
-\section{Objective 1: Proof of Concept}
+\section{Objective 1: Test CNN and LCS individually}
 \subsection{LCS Benchmark Evaluation} \label{subsec:bench}
 \begin{itemize}
-	\item Evaluate the performance of a LCS on benchmark datasets such as Breast Cancer Wisconsin \cite{wisconsinbreast} and Zoo Data Set \cite{zoodata}. Refer to Section \ref{subsec:datasets} for the explanations of why these datasets are used. Evaluation will be measured on criteria such as accuracy.
-
+	\item Evaluate the performance of LCS on benchmark datasets such as Breast Cancer
+	Wisconsin \cite{wisconsinbreast} and Zoo Data Set \cite{zoodata}. Refer to Section \ref{subsec:datasets} for the explanations of why these datasets are used. Evaluation will be measured on the criteria of
+	accuracy, fitness and the solution’s generality.
 \end{itemize}
 
-For the project to succeed, there must be a good foundational understanding of how LCSs work in order to understand the specificities for the configuration of the system. The training and test set for each benchmark dataset has been split using a 70:30 split. This ratio ensures that the model has sufficient instances to learning from but also to provide a number of hidden instances to evaluate on. The dataset is also manually stratified in order to ensure a balance of all classes both the training and test set. For example, the Wisconsin Breast Cancer dataset has a 65:35 distribution of benign:malignant data. This is to ensure that the accuracy of the training will reflect in the accuracy of the test set. There are several imputation methods which can be applied to LCS. However, for easy and quick results, instances have been removed in the Breast Cancer Dataset. This is sufficient due to the distribution of the 2 classes and the number of instances being of adequate size (699 Instances).  Machine Learning classifiers are often sensitive to imbalanced training datasets as a result to the proportions of the different classes which can lead to the system favoring majority classes. However, the LCS was able to classify the Zoo data set with a reasonable outcome. Results are run 30 times and averages are presented below to ensure consistency. Evaluation is done on accuracy. See Section \ref{sec:eval} for the definition.
+For the project to succeed, there must be a good foundational understanding of how LCSs work in order to understand the specificities for the configuration of the system. 
+
+What implementation LCS are you using?? (Maybe in design)
+What configurations are used!!!
+
+Testing the LCS is done by:
+\begin{enumerate}
+	\item Split dataset 70:30. 
+	\item Clean data for inputations
+	\item Train LCS on training set
+	\item Test LCS on test set
+	\item Repeat 30 times
+\end{enumerate}
+
+[TODO: This should go in design]
+
+The training and test set for each benchmark dataset has been split using a 70:30 split. This ratio ensures that the model has sufficient instances to learning from but also to provide a number of hidden instances to evaluate on. The dataset is also manually stratified in order to ensure a balance of all classes both the training and test set. For example, the Wisconsin Breast Cancer dataset has a 65:35 distribution of benign:malignant data. This is to ensure that the accuracy of the training will reflect in the accuracy of the test set. There are several imputation methods which can be applied to LCS. However, for easy and quick results, instances have been removed in the Breast Cancer Dataset. This is sufficient due to the distribution of the 2 classes and the number of instances being of adequate size (699 Instances).  Machine Learning classifiers are often sensitive to imbalanced training datasets as a result to the proportions of the different classes which can lead to the system favoring majority classes. 
+
+
+However, the LCS was able to classify the Zoo data set with a reasonable outcome. Results are run 30 times and averages are presented below to ensure consistency. Evaluation is done on accuracy. See Section \ref{sec:eval} for the definition.
 
 Results in the table below show that the trained LCS is sufficient in solving classification problems as well as having the capabilities of extracting knowledge from imbalanced domains such as the problem presented by the zoo dataset.
 
@@ -265,6 +284,15 @@ Results in the table below show that the trained LCS is sufficient in solving cl
 		\hline
 	\end{tabular}
 \end{center}
+
+
+\subsection{Evaluate and Discuss LCS Rules}
+\begin{itemize}
+	\item  Evaluate and analyse the rules outputted by the LCS to ensure that the rules are
+human readable.
+
+\end{itemize}
+
 
 \subsection{Create a data set}
 \begin{itemize}
@@ -281,15 +309,6 @@ A bespoke dataset of shapes was made in order to determine whether CNNs produced
 	
 \end{figure}
 The structure of the CNN is shown in Figure \ref{fig:cnnStructure} where there are two convolutional layers. The model extracted had been trained on 10000 steps with 400 of each shape for training. The test set consists on 120 of each shape. Accuracy of both training and test set could reach 100\%. 
-
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=150mm, scale=0.9]{CNN_structure.png}
-		\caption{Structure of CNN used}
-		\label{fig:cnnStructure}
-	\end{center}
-	
-\end{figure}
 
 \subsection{Reusing features} \label{subsec:reuse}
 \begin{itemize}
