@@ -59,9 +59,8 @@ The goal is to create methods for extracting and integrating features from layer
 	\item  Integrate extracted features from CNN to the LCS. This will be achieved when these sub-objectives are completed:
 	
 	\begin{enumerate}
-		\item Create synthetic image datasets with more complex combinations of shapes. Objects include cups, spoons, forks, donuts and vases. The dataset will be used to evaluate whether the combined system can classify the dataset at a reasonable accuracy and can output human readable rules that are general.  
-		
-		\item Refine the system to improve the accuracy: involves filters before and math after
+		\item Create a synthetic image datasets with more complex combinations of shapes. Objects include cups, spoons, forks, donuts and vases. The dataset will be used to evaluate whether the combined system can classify the dataset at a reasonable accuracy and can output human readable rules that are general. 
+		\item Integrate systems
 		\item Develop feature construction methods which will further improve the accuracy, fitness or the solution\textquotesingle s generality. Feature construction methods can be used to learn more precise decision boundaries.
 		
 		\item Source image datasets relating to real world images and situations such as ImageNet \cite{imagenet}.
@@ -290,27 +289,38 @@ Results in the table below show that the trained LCS is sufficient in solving cl
 \begin{itemize}
 	\item  Evaluate and analyse the rules outputted by the LCS to ensure that the rules are
 human readable.
+\end{itemize}
+An measure of the rules outputted by the LCS is numerosity, which describes how frequent the rule is used to classify an instance. The larger the numerosity, the more frequent the rule has been used. Therefore, the rules with the largest numerosities are the most important in terms of getting a high accuracy in evaluation as they describe a larger subset of the population. 
 
+Some rules developed from the Zoo dataset (all rules can be viewed in the Appendix Section [ref]) with high numerosity values are:
+\begin{itemize}
+	\item IF (Hair AND NOT Lay Eggs) OR (Hair AND NOT Airbourne) | THEN Mammal
+	\item IF Feathers | THEN Bird
+	\item IF Lay Eggs AND Fins | THEN Fish
 \end{itemize}
 
+These rules cover majority of their phenotypes. However, a platypus (mammal) would not meet the first rule as it is one the edge cases of a mammal laying eggs. Therefore, rules which cover a smaller subset of the population are also important. 
+
+\subsubsection{Evaluation}
+I believe the rules generated are human readable??
 
 \subsection{Create a data set}
 \begin{itemize}
-	\item Create a bespoke image shape dataset. The dataset will contain simple shapes without confounding variables which introduce ambiguity and distraction. Using existing image datasets such as imagenet \cite{imagenet} will increase the complexity of analysing whether the features extracted will convey a rich meaning. The dataset will be evaluated on a CNN for shape classification where evaluation is measured on the accuracy of the training and test sets.
+	\item Create a bespoke image shape dataset. The dataset will contain simple shapes without confounding variables which introduce ambiguity and distraction. Using existing image datasets such as imagenet \cite{imagenet} will increase the complexity of analysing whether the features extracted will convey a rich meaning. The dataset will be evaluated on a CNN for shape classification where evaluation is measured by the accuracy of the unseen test sets.
 	
 \end{itemize}
-A bespoke dataset of shapes was made in order to determine whether CNNs produced information-rich features. The dataset consists of randomly generated, black and white, class balanced, 28 X 28 basic images such as lines, circles, ellipses, squares, rectangles and triangles as seen in Figure \ref{fig:inputShapes}. It is hypothesised that shapes are the building blocks for more complex objects. Therefore, extracting the features produced by the convolutional layers may produce features which can then be used by the LCS. 
+A bespoke dataset of shapes was made in order to determine whether CNNs produced information-rich features. The dataset consists of randomly generated, black and white, class balanced, 28 X 28 basic images (lines, ellipses, rectangles and triangles) as seen in Figure \ref{fig:inputShapes}. It is hypothesised that shapes are the building blocks for more complex objects. Therefore, extracting the features produced by the convolutional layers may produce features which can then be used by the LCS. 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=100mm, scale=0.9]{inputShapes.png}
+		\includegraphics[width=50mm, scale=0.9]{inputShapes.png}
 		\caption{Input images to CNN}
 		\label{fig:inputShapes}
 	\end{center}
 	
 \end{figure}
-The structure of the CNN is shown in Figure \ref{fig:cnnStructure} where there are two convolutional layers. The model extracted had been trained on 10000 steps with 400 of each shape for training. The test set consists on 120 of each shape. Accuracy of both training and test set could reach 100\%. 
+The model extracted had been trained on 10000 steps with 400 of each shape for training. The test set consists on 120 of each shape. Accuracy of both training and test set could reach 100\%. 
 
-\subsection{Reusing features} \label{subsec:reuse}
+\subsection{Evaluate the reuse of features} \label{subsec:reuse}
 \begin{itemize}
 		\item Evaluate whether features extracted from the CNN can be reused by evaluating on our benchmark datasets as well as external benchmarks such as MNIST to determine whether the features extracted convey a rich meaning.
 	
@@ -361,12 +371,13 @@ Figure \ref{fig:mnistseven} is an example of the classifications performed by th
 	\end{center}
 	
 \end{figure}
-\subsection{Objective 2}
-\subsubsection{1}
+
+\section{Create a Synthetic Dataset}
 \begin{itemize}
-	\item Create bespoke image datasets with more complex combinations of shapes such as cups where the data set is building on the dataset from the first objective.
+	\item Create a synthetic image datasets with more complex combinations of shapes. Objects include cups, spoons, forks, donuts and vases. The dataset will be used to evaluate whether the combined system can classify the dataset at a reasonable accuracy and can output human readable rules that are general.  
 \end{itemize}
-A dataset of common, inanimate objects was created by scrapping Google images. This was done by writing a script which would return 100 Google images with Google searches such as "plain plate" or "mug". After using the scraping algorithm, the images were manually filtered for anomalies. The dataset contains 1000 images of dimension  128 X 128 is made up of a simple object such as a plate, donut, spoon, mug or fork. Of the 1000, 200 are original where transformations (rotation at 90, 180, 270 degrees and mirrored along the y-axis) are applied. Translation and scaling are transformations that are not applied to the dataset. This is because there should be efficient sizes and placements of the objects in the dataset. Images containing these features were discarded:
+\subsection{Design}
+A dataset of common, inanimate objects was created by scrapping Google images using ref. This was done by writing a script which would return 100 Google images with Google searches such as "plain plate" or "mug". After using the scraping algorithm, the images were manually filtered for anomalies. The dataset contains 1000 images of dimension  128 X 128 is made up of a simple object such as a plate, donut, spoon, mug or fork. Of the 1000, 200 are original where transformations (rotation at 90, 180, 270 degrees and mirrored along the y-axis) are applied. Translation and scaling are transformations that are not applied to the dataset. This is because there should be efficient sizes and placements of the objects in the dataset. Images containing these features were discarded:
 
 This is actually feature selection :O
 \begin{itemize}
@@ -375,49 +386,39 @@ This is actually feature selection :O
 \item background that is not monotonous/homogeneous
 \item object is of similar colour and shade of background
 \end{itemize}
+
+\subsection{Discussion}
 Feature Selection Bias??? Human error
+
+The dataset will contain simple shapes without confounding variables which introduce ambiguity and distraction. 
+
 The system does not perform object segmentation where a particular object can be recognised in a cluttered situation. Therefore, multiple objects in the image would result in the Mask RCNN to identify shapes not part of the object of interest. Additionally, bold non-continuous patterns would be viewed as feature shapes being part of the object of interest. However, if the pattern is continuous, the filters (mentioned in Section ref) such as blurring the image would homogenise the pattern. 
 
 This method of collecting images for this synthetic dataset has limitations where the images are from one source. Although Google Images provides an easily accessible, broad range of image, there is a probability of bias as the images are recommended using an algorithm. 
 
 Refer to Appendix [ref] for a sample of the dataset 
-mention different types of spoons, metal, plastic, serving etc
+mention different types of spoons, metal, plastic, serving etc.
 
-
-\section{2}
+\section{Refine System}
 \begin{itemize}
+	\item Refine the system to improve the accuracy: involves filters before and math after
 	\item Construct embedded, filter or wrapper feature selection methods. These feature selection methods are defined as methods which embed the selection within the basic induction algorithm, methods which use feature selection to filter features passed to induction, and methods that treat feature selection as a wrapper around the induction process \cite{blum1997selection}.
 \end{itemize}
 
-
-\subsection{Low-pass Operator}
-
-Python's cv2 image processing library was used to apply the low-pass filter. The procedure that I used is similar to using a mean filter, which consists of
-\begin{enumerate}
-\item For each pixel in image, using a 5x5 filter, look at neighbours to decide if it is representative of its surroundings.
-\item For each pixel in image, replace pixels in a 5x5 filter with the mean value of its neighbours including itself
-\end{enumerate}
-The size of the filter results in different levels of blurring. A smaller filter size results in less of a blurring effect while a larger filter size results in a greater blurring effect as we are looking at more neighbouring pixels. A 5x5 filter size was chosen as it provided enough smoothing to reduce high intensity changes but also small enough to retain the shape of the object.
-
-However, a limitation of applying a filter across the whole image is losing fine detail in areas which are essential in identifying an object. This is noticeable in blurring an image of a fork where the gaps in the tines are small. Therefore, when a low-pass filter if applied, the tine detailing can be lost.
-
-\subsection{Canny Algorithm}
-
-The canny operator was implemented by the Python cv2 library. However, I applied the low-pass filter before the canny operator to remove any noise. The process of the canny operator algorithm involves:
-\begin{enumerate}
-	\item Determine the intensity gradients using a edge detection operator such as Sobel, Roberts, Prewitt filter- The operator returns a value for the first derivative in the horizontal direction (Gx) and the vertical direction (Gy). The Gy mask shows interest in left-hand side columns compare to right-hand side columns where the middle columns are ignored. An edge occurs when there is a colour change and hence resulting in the intensity of pixels changing. The edge gradient can be determined by $|G|$ = $\sqrt{Gx^{2} + Gy^{2}} $. 
-
-	\item Apply non-maximum suppression- This technique is applied to find the thickest edge in order to produce a final image with thin uniform edges.
-	\item Double thresholding- To eliminate as much noise as possible, a high and low threshold is applied to remove edge pixels with weak gradient value. Edge pixels with a value greater than the high threshold is considered a strong edge pixel. Edge pixels with a value in between the two thresholds is considered a weak edge pixel. Common thresholds and the thresholds used to detect the edges in the image datasets are 100 and and 200.
-	\item Edge tracking by hysteresis- This techniques is used to determine whether weak edge pixels detected in the non-maximum suppression stage is noise/colour variations or a true edge. To achieve this, the assumption that a weak edge pixel caused from real edges will be connected to a strong edge pixel whereas noise results in weak edges which are unconnected. 
-	
-\end{enumerate}
+\subsection{Design: CNN Model}
+There have been many modifications in the CNN model in improving the classification accuracy. CNNs perform well when classifying images that have easy to identify features where the dataset showcase many similiar instances of features. However, when solving real world problems, orientation aspects like rotation and tilt become a problem when they are not represented in the dataset. This can be a problem when it is difficult in finding a large variety of instances which represent the objects we are classifying.
 
 
+Mask RCNN is a recent modification of the CNN model where it is known for object segmentation. 
+Capsule Networks is also a recent architecture of CNN known to be resilient at handling types of visual stimulus and encoding high level features like pose (orientation, translation, position), deformation, velocity, texture, hue etc. Both architectures contain many layers and encapsulates high level representations of features in order to have high accuracies in classifying difficult domains.
 
-\paragraph{Mask RCNN Model}
-loss is 0.5
-The implementation of Mask RCNN [red], written on Python, Keras and Tensorflow, was based off the architecture discussed in original paper \cite{he2017mask}. A synthetic dataset created using cv2, consisting of simple shapes such as triangles, squares, circles and lines, are placed randomly on a uniform background. The colour of the shapes and background, number of shapes in the image (between 1-5), shape, size of shape and location of shapes are all randomly generated. The colour of the shapes in one image is uniform as shown in Figure \ref{fig:dataset_ex}. This is so the model is better at recognising shapes within a connected object rather than relying on edges for boundaries. 
+Both architectures have advantages and disadvantages. For example, Capsule Networks require a large amount for memory to store the different capsules. Capsules are nested set of neural layers. Because they are layers within layers, they employ another layer of dimension to create a model compared to traditional CNNs. This meant that training can be slow when using an older GPU. As Mask RCNN's architecture utilises 2 CNNs one after the other, the dimensionality of model representations is the same as a traditional CNN. Hence, Mask RCNNs were decided as the CNN model. 
+ 
+
+\subsection{Implementation Mask RCNN}
+Config here 
+Training loss is 0.5
+The implementation of Mask RCNN [ref], written on Python, Keras and Tensorflow, was based off the architecture discussed in original paper \cite{he2017mask}. A synthetic dataset used in the testing objectives were recreated using CV2, consisting of simple shapes such as triangles, squares, circles and lines, are placed randomly on a uniform background. The colour of the shapes and background, number of shapes in the image (between 1-5), shape, size of shape and location of shapes are all randomly generated. The colour of the shapes in one image is uniform as shown in Figure \ref{fig:dataset_ex}. This is so the model is better at recognising shapes within a connected object rather than relying on edges for boundaries. 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=160mm, scale=1]{maskrcnn_train.png}
@@ -427,52 +428,53 @@ The implementation of Mask RCNN [red], written on Python, Keras and Tensorflow, 
 	
 \end{figure}
 
+The model is then trained using a dataset of 100,000 synthetic shapes with a test dataset of 33,000 to validate and evaluate the model. Like many trained neural network models, weights of the nodes were initialised with a pretrained model trained on the (Common Objects in Context) COCO dataset \cite{lin2014microsoft}. This leads to a more efficient training process compared to initialising the weights to 0 or random numbers. This is because deep neural networks trained on images learn features in the first layers that are not specific to a particular dataset or task such as edges. The weight values learnt are general where they are applicable to many datasets and tasks \cite{yosinski2014transferable}.
 
-The model is then trained using a dataset of 100,000 synthetic shapes with a test dataset of 33,000 to validate and evaluate the model. [ENTER RESULT P HERE] Like many trained neural network models, weights of the nodes were initialised with a pretrained model trained on the (Common Objects in Context) COCO dataset \cite{lin2014microsoft}. This leads to a more efficient training process compared to initialising the weights to 0 or random numbers. This is because deep neural networks trained on images learn features in the first layers that are not specific to a particular dataset or task such as edges. The weight values learnt are general where they are applicable to many datasets and tasks \cite{yosinski2014transferable}.
-
-After 50[proof needed] epochs (a single step in training), the model produced the highest p value. Training the model for more epochs results in a model overfitting on the training dataset. The purpose of the test set is to test the generality of the model to unseen instances.
+After 40 epochs (a single step in training), the model produced the highest MaP value (MaP defined in Section ref) (Graph of MaP values across different epochs are shown in Appendix ref). Training the model for more epochs results in a model overfitting on the training dataset. The purpose of the test set is to test the generality of the model to unseen instances.
  
 The learning rate of the training process is 0.002. As the weights first initialised are incorrect, the back propagation algorithm is used to fix the error of the weights by transmitting the fixed error rate to lower layers (layers closer to the input) from upper layers (layers closer to output). To minimise the error of the weights, a gradient descent optimiser (such as Adam, RMSProp, Adagrad) is used (commonly known as a loss function). The learning rate is a parameter used which dictates how big of a step the optomizer is to move the weights. With a lower learning rate, the training is more reliable. However, the optimisation is more time consuming because the steps making towards minimising the loss function is small. In comparison, if the learning rate is high, the training may not converge or diverge. This is due to large weight changes where the optimiser overshoots the minimum.
 
+1. train using synthetic dataset x amount
 
-\subsubsection{3}
-\begin{itemize}
-	\item Evaluate these methods against the raw feature benchmarks. Evaluation will be measured on accuracy, fitness and the solution\textquotesingle s generality. 
-\end{itemize}
 
-\subsection{Objective 3}
-\subsubsection{1}
-\begin{itemize}
-	\item Construct feature construction methods which will further improve the accuracy, fitness or the solution's generality. Feature construction methods can be used to learn more precise decision boundaries.
-\end{itemize}
+\subsection{Filters}
+Discuss
+\subsubsection{Low-pass Operator}
 
-\subsubsection{2}
-\begin{itemize}
-	\item Source image datasets relating to real world images and situations such as imagenet \cite{imagenet}.
-\end{itemize}
+Python's cv2 image processing library was used to apply the low-pass filter. The procedure that I used is similar to using a mean filter, which consists of
+\begin{enumerate}
+	\item For each pixel in image, using a 5x5 filter, look at neighbours to decide if it is representative of its surroundings.
+	\item For each pixel in image, replace pixels in a 5x5 filter with the mean value of its neighbours including itself
+\end{enumerate}
+The size of the filter results in different levels of blurring. A smaller filter size results in less of a blurring effect while a larger filter size results in a greater blurring effect as we are looking at more neighbouring pixels. A 5x5 filter size was chosen as it provided enough smoothing to reduce high intensity changes but also small enough to retain the shape of the object.
 
-\subsubsection{3}
-\begin{itemize}
-	\item Evaluate the classifier system with feature selection and feature construction using measurement criteria such as accuracy, fitness and the solution\textquotesingle s generality.
-\end{itemize}
+However, a limitation of applying a filter across the whole image is losing fine detail in areas which are essential in identifying an object. This is noticeable in blurring an image of a fork where the gaps in the tines are small. Therefore, when a low-pass filter if applied, the tine detailing can be lost.
+
+\subsubsection{Canny Algorithm}
+
+The canny operator was implemented by the Python cv2 library. However, I applied the low-pass filter before the canny operator to remove any noise. The process of the canny operator algorithm involves:
+\begin{enumerate}
+	\item Determine the intensity gradients using a edge detection operator such as Sobel, Roberts, Prewitt filter- The operator returns a value for the first derivative in the horizontal direction (Gx) and the vertical direction (Gy). The Gy mask shows interest in left-hand side columns compare to right-hand side columns where the middle columns are ignored. An edge occurs when there is a colour change and hence resulting in the intensity of pixels changing. The edge gradient can be determined by $|G|$ = $\sqrt{Gx^{2} + Gy^{2}} $. 
+	
+	\item Apply non-maximum suppression- This technique is applied to find the thickest edge in order to produce a final image with thin uniform edges.
+	\item Double thresholding- To eliminate as much noise as possible, a high and low threshold is applied to remove edge pixels with weak gradient value. Edge pixels with a value greater than the high threshold is considered a strong edge pixel. Edge pixels with a value in between the two thresholds is considered a weak edge pixel. Common thresholds and the thresholds used to detect the edges in the image datasets are 100 and and 200.
+	\item Edge tracking by hysteresis- This techniques is used to determine whether weak edge pixels detected in the non-maximum suppression stage is noise/colour variations or a true edge. To achieve this, the assumption that a weak edge pixel caused from real edges will be connected to a strong edge pixel whereas noise results in weak edges which are unconnected. 
+	
+\end{enumerate}
+
+\subsection{LCS Implementation and Design}
+\section{Integration of Systems Design and Implementation Method}
 
 [TODO: WRITE UP THESE POINTS]
 \begin{itemize}
 
-	\item Bespoke dataset of 200 original input images
-	\item  How I obtained the images
-	  
-	  - Scrapping Google images, searched for images like "plain mug"
-	  
-	  - Removed images that included patterns, more than 1 object i.e. multiple cups
-	  
-	 \item Applied filter such as sobel, low pass to see if results of individual images. Criteria of which image, original, low pass, or sobel
+
+	 \item Criteria of which image, original, low pass, or sobel
 	 \item Process of taking output of MaskRCNN and changing it to fit input for LCS. 
 	 
 	 - Pick the biggest shape first and base all relationships on that
 	 - Pick the shape that the MaskRCNN has outputted the biggest score.
-	 \item BioHEL
-	 \item CapsNet
+
 
 \end{itemize}
 
