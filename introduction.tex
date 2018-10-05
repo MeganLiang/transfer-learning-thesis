@@ -40,7 +40,7 @@ Features gathered with feature selection and feature construction methods will b
 \section{Objectives} \label{subsec:obj}
 The problems in the project can be broken down into 3 main objectives. The objectives are achieved when the criteria defined is met.
 
-The goal is to create methods for extracting and integrating features from layers in a DNN as input features to a LCS to determine if this will enhance the performance on solving classification problems compared to raw features selected by the LCS. The performance of the system will be evaluated on standard data mining benchmark datasets and will be measured on criteria such as accuracy, fitness and the solution\textquotesingle s generality (see Section \ref{sec:eval} for definitions).
+The goal is to create methods for extracting and integrating features from layers in a DNN as input features to a LCS to determine if this will enhance the performance on solving classification problems compared to raw features selected by the LCS. The performance of the system will be evaluated on standard data mining benchmark datasets and will be measured on criteria of accuracy, fitness and the solution's generality (see Section \ref{sec:eval} for definitions).
  
 
 \begin{enumerate}
@@ -48,26 +48,24 @@ The goal is to create methods for extracting and integrating features from layer
 	
 	\begin{enumerate}
 		\item Evaluate the performance of LCS on benchmark datasets such as Breast Cancer Wisconsin \cite{wisconsinbreast} and Zoo Data Set \cite{zoodata}. Refer to Section \ref{subsec:datasets} for the explanations of why these datasets are used. Evaluation will be measured on the criteria of accuracy, fitness and the solution's generality.
-		\item Evaluate and analyse the rules outputted by the LCS to ensure that the rules are human readable.
+		\item Evaluate and analyse the rules outputted by the LCS to ensure that the rules are human readable. This will be manually evaluated by using my own knowledge of the domain. 
 		
 		\item Create a bespoke image shape dataset. The dataset will contain simple shapes without confounding variables which introduce ambiguity and distraction. Using existing image datasets such as ImageNet \cite{imagenet} will increase the complexity of analysing whether the features extracted will convey a rich meaning. The dataset will be evaluated on a CNN for shape classification where evaluation is measured by the accuracy of the unseen test set.
 		
-		\item Evaluate whether features extracted from the CNN can be reused by evaluating on datasets which contain simple shapes such as the MNIST dataset to determine whether the features extracted convey a rich meaning.
+		\item Evaluate whether features extracted from the CNN can be reused by evaluating on datasets which contain simple shapes such as the MNIST dataset to determine whether the features extracted convey a rich meaning. This will be evaluated using the accuracy of the CNN on the MNIST dataset as well as analysing the results to see whether they are significant or not (Student T-test). 
 		
 	\end{enumerate}
 	
-	\item  Integrate extracted features from CNN to the LCS. This will be achieved when these sub-objectives are completed:
+	\item  Integrate extracted features from CNN to the LCS. The input features to the LCS needs to be designed in a way where the learnt rule set conveys rich meaning and is human readable. This will be achieved when these sub-objectives are completed:
 	
 	\begin{enumerate}
 		\item Create a synthetic image datasets with more complex combinations of shapes. Objects include cups, spoons, forks, donuts and vases. The dataset will be used to evaluate whether the combined system can classify the dataset at a reasonable accuracy and can output human readable rules that are general. 
-		\item Integrate systems
-		\item Develop feature construction methods which will further improve the accuracy, fitness or the solution\textquotesingle s generality. Feature construction methods can be used to learn more precise decision boundaries.
+		\item Integrate systems by feeding the extracted features from the CNN to the LCS by designing a file format which is suitable in producing rules that convey a rich meaning.
+		\item Develop feature construction methods which will further improve the accuracy, fitness or the solution's generality. Feature construction methods can be used to learn more precise decision boundaries.
 		
-		\item Source image datasets relating to real world images and situations such as ImageNet \cite{imagenet}.
-		
-		\item Evaluate the classifier system with feature selection and feature construction using measurement criteria such as accuracy, fitness and the solution\textquotesingle s generality.
+		\item Evaluate the classifier system with feature selection and feature construction using measurement criteria such as accuracy, fitness and the solution's generality.
 	\end{enumerate}
-		
+	\item Source image datasets relating to real world images and situations like MNIST [ref].
 	
 \end{enumerate}
 \chapter{Background}
@@ -253,6 +251,10 @@ Both architectures have advantages and disadvantages. For example, Capsule Netwo
 Mask RCNN outputs include regions of interest (bounding box) and the classification prediction. Though it would be advantageous to encapsulate more relationships using Capsule Networks, we are able to draw relationships between the objects and their positions in the image.
 
 \section{LCS Model}
+
+..
+
+
 - GA Assist
 
 - BioHel
@@ -279,7 +281,8 @@ The output file created from the CNN (see Appendix ref for example) contained th
 
 If there is only 1 class, then there are no relationships. However, when multiple classes are detected in the image, instead of mapping relationships with all relationships (many to many), relationships are linked to one object (1 to many) (shown in Figure ref). There are many ways to define which object to pick to relate all the relationships to. i.e. The largest bounding box object or the object with the highest probability score. 
 
-I have chosen to base all relationships of objects on the largest bounding box. This is because it should be the most consistent across the variations of images of the classes. These features are then configured in the WEKA format [ref]. 
+I have chosen to base all relationships of the probability scores of the objects. This is because it should be the most consistent across the variations of images of the classes. i.e. some bounding boxes may be large where the CNN is unsure about the classification. These features are then configured in the WEKA format [ref]. An example of the input file for the BioHEL LCS is attached at Appendix [ref]
+There is a maximum of 5 classes in each image. If the CNN has detected more than 5, these objects are less important as they contain weaker confidence scores. 
 
 
 \chapter{Implementation, Evaluation and Discussion}
@@ -464,16 +467,49 @@ The implementation of Mask RCNN [ref], written on Python, Keras and Tensorflow, 
 	
 \end{figure}
 
-The model is then trained using a dataset of 100,000 synthetic shapes with a test dataset of 33,000 to validate and evaluate the model. Like many trained neural network models, weights of the nodes were initialised with a pretrained model trained on the (Common Objects in Context) COCO dataset \cite{lin2014microsoft}. This leads to a more efficient training process compared to initialising the weights to 0 or random numbers. This is because deep neural networks trained on images learn features in the first layers that are not specific to a particular dataset or task such as edges. The weight values learnt are general where they are applicable to many datasets and tasks \cite{yosinski2014transferable}.
+The model is then trained using a dataset of 75,000 synthetic shapes with a test dataset of 25,000 to validate and evaluate the model. Like many trained neural network models, weights of the nodes were initialised with a pretrained model trained on the (Common Objects in Context) COCO dataset \cite{lin2014microsoft}. This leads to a more efficient training process compared to initialising the weights to 0 or random numbers. This is because deep neural networks trained on images learn features in the first layers that are not specific to a particular dataset or task such as edges. The weight values learnt are general where they are applicable to many datasets and tasks \cite{yosinski2014transferable}.
 
-After 40 epochs (a single step in training), the model produced the highest MaP value (MaP defined in Section ref) (Graph of MaP values across different epochs are shown in Appendix ref). Training the model for more epochs results in a model overfitting on the training dataset. The purpose of the test set is to test the generality of the model to unseen instances.
+After 40 epochs (a single step in training), the model produced the highest MAP value (Mean Average Precision defined in Evaluation Section ref) (Graph of MAP values across different epochs are shown in \ref{fig:epoch}). Training the model for more epochs results in a model overfitting on the training dataset. The purpose of the test set is to test the generality of the model to unseen instances.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=100mm, scale=1]{epoch_training.png}
+		\caption{Mean Average Precision values shown as the Mask RCNN is learning}
+		\label{fig:epoch}
+	\end{center}
+	
+\end{figure}
  
 The learning rate of the training process is 0.002. As the weights first initialised are incorrect, the back propagation algorithm is used to fix the error of the weights by transmitting the fixed error rate to lower layers (layers closer to the input) from upper layers (layers closer to output). To minimise the error of the weights, a gradient descent optimiser (such as Adam, RMSProp, Adagrad) is used (commonly known as a loss function). The learning rate is a parameter used which dictates how big of a step the optomizer is to move the weights. With a lower learning rate, the training is more reliable. However, the optimisation is more time consuming because the steps making towards minimising the loss function is small. In comparison, if the learning rate is high, the training may not converge or diverge. This is due to large weight changes where the optimiser overshoots the minimum.
+\begin{enumerate}
+	\item Train using synthetic training dataset of 75,000 images using the Mask RCNN framework
+	\item After the specified epoch has been reached, stop
+	\item The learnt model is saved 
+	\item Using the learnt model, validate by detecting images in the test set
+\end{enumerate}
 
-1. train using synthetic dataset x amount
+\subsection{Results}
+Loss is 0.46
+MAP is 0.856
+
+\subsection{LCS Implementation and Design}
+\section{Integration of Systems Design and Implementation Method}
+
+[TODO: WRITE UP THESE POINTS]
+\begin{itemize}
 
 
-\subsection{Filters}
+	 \item Criteria of which image, original, low pass, or sobel
+	 \item Process of taking output of MaskRCNN and changing it to fit input for LCS. 
+	 
+	 - Pick the biggest shape first and base all relationships on that
+	 - Pick the shape that the MaskRCNN has outputted the biggest score.
+
+
+\end{itemize}
+
+
+\section{Filters}
 Discuss why we need filters
 \subsubsection{Low-pass Operator}
 
@@ -497,22 +533,6 @@ The canny operator was implemented by the Python cv2 library. However, I applied
 	\item Edge tracking by hysteresis- This techniques is used to determine whether weak edge pixels detected in the non-maximum suppression stage is noise/colour variations or a true edge. To achieve this, the assumption that a weak edge pixel caused from real edges will be connected to a strong edge pixel whereas noise results in weak edges which are unconnected. 
 	
 \end{enumerate}
-
-\subsection{LCS Implementation and Design}
-\section{Integration of Systems Design and Implementation Method}
-
-[TODO: WRITE UP THESE POINTS]
-\begin{itemize}
-
-
-	 \item Criteria of which image, original, low pass, or sobel
-	 \item Process of taking output of MaskRCNN and changing it to fit input for LCS. 
-	 
-	 - Pick the biggest shape first and base all relationships on that
-	 - Pick the shape that the MaskRCNN has outputted the biggest score.
-
-
-\end{itemize}
 
 \chapter{Evaluation}
 \section{Evaluation} \label{sec:eval}
