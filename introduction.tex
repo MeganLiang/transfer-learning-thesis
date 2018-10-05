@@ -190,6 +190,8 @@ Additionally, patterns can be found in multiple classifiers where knowledge obta
 
 Feature selection is a common technique used to obtain a smaller set of more relevant features in order to improve the performance \cite{yu2004efficient}. This is done with some degree of cardinality reduction where the number of features are reduced to improve the quality of the feature set. Maintaining a large amount of features increases the dimensionality of the problem which can be costly in terms of complexity in time and memory as well as decreasing the quality of information. Noisy and redundant data make it more difficult to discover meaningful patterns. Other benefits of feature selection include producing a simpler, easier to interpret model where generalisations are used to reduce overfitting.
 
+[TALK ABOUT FILTER Feature Selection]
+
 Feature construction involves transforming a given set of input features to generate a new set of more meaningful features \cite{markovitch2002feature}. Newly generated features take into account the relationships in the previous feature space. Therefore, they are more meaningful and produce more accurate classifiers and decision boundaries. 
 
 \subsection{Low Pass Filter}
@@ -201,9 +203,6 @@ Another filter that was investigated is the Canny filter \cite{canny1986computat
 
 \chapter{Design}
 This project uses supervised learning to train a Michigan-style LCS and a CNN. The size and ratio of the datasets used for training has been carefully thought through. External datasets have been chosen to evaluate the classifiers.
-
-\section{Design of experiments}
-Describe the method I undertook with the experiments
 
 \section{Supervised Training}
 \label{subsec:supervised}
@@ -238,6 +237,50 @@ A bespoke shapes dataset was created in order to investigate whether CNNs could 
 As this project currently explores the concept of supervised learning, using a training set to train instances on the learning algorithm and a test set for performance measurement is necessary. A training set is a collection of instances from which a classifier is trained. A test set is a collection of instances which is unseen by the classifier but is used for measuring the performance of the learnt classifier. By using a test set, we can validate that the classifier is generalised where overfitting has not occurred. In order of having enough instances for training whilst having a hidden set for evaluation, the well-known ratio 70:30 will be applied on the training and test sets respectively on all learning of the classifiers where this allows enough instances for the system to train on and provides enough hidden instances for validation.
 
 Instead of using a validation set, a collection of instances used in the training to minimise overfitting, other techniques have been used during the training of the CNN. Using a dropout rate, a rate set which refers to ignoring random neurons during the training phase can also reduce overfitting. With the LCS, subsumption and the system’s pressure on generality will also reduce overfitting without the need of a validation set.
+
+\section{CNN Model}
+
+[REWRITE]
+
+There have been many modifications in the CNN model in improving the classification accuracy. CNNs perform well when classifying images that have easy to identify features where the dataset showcase many similiar instances of features. However, when solving real world problems, orientation aspects like rotation and tilt become a problem when they are not represented in the dataset. This can be a problem when it is difficult in finding a large variety of instances which represent the objects we are classifying.
+
+
+Mask RCNN is a recent modification of the CNN model where it is known for object segmentation. 
+Capsule Networks is also a recent architecture of CNN known to be resilient at handling types of visual stimulus and encoding high level features like pose (orientation, translation, position), deformation, velocity, texture, hue etc. Both architectures contain many layers and encapsulates high level representations of features in order to have high accuracies in classifying difficult domains.
+
+Both architectures have advantages and disadvantages. For example, Capsule Networks require a large amount for memory to store the different capsules. Capsules are nested set of neural layers. Because they are layers within layers, they employ another layer of dimension to create a model compared to traditional CNNs. This meant that training can be slow when using an older GPU. As Mask RCNN's architecture utilises 2 CNNs one after the other, the dimensionality of model representations is the same as a traditional CNN. Hence, Mask RCNNs were decided as the CNN model. 
+
+Mask RCNN outputs include regions of interest (bounding box) and the classification prediction. Though it would be advantageous to encapsulate more relationships using Capsule Networks, we are able to draw relationships between the objects and their positions in the image.
+
+\section{LCS Model}
+- GA Assist
+
+- BioHel
+
+- WEKA formatting 
+
+- Output
+\section{Synthetic Dataset}
+A dataset of common, inanimate objects was created by scrapping Google images using ref. This was done by writing a script which would return 100 Google images with Google searches such as "plain plate" or "mug". After using the scraping algorithm, the images were manually filtered for features that we are not interested in. 
+
+The dataset contains 1000 images of dimension  128 X 128 is made up of 6 classes of simple objects such as a plate, donut, spoon, mug, vase or fork. Of the 1000, 200 are original where transformations (rotation at 90, 180, 270 degrees and mirrored along the y-axis) are applied. Translation and scaling are transformations that are not applied to the dataset. This is because there should be efficient sizes and placements of the objects in the dataset. Images containing these features were discarded:
+
+\begin{itemize}
+	\item multiple objects in the image
+	\item bold non-continuous patterns on the object
+	\item background that is not monotonous/homogeneous
+	\item object is of similar colour and shade of background
+\end{itemize}
+
+\section{Integration of CNN and LCS}
+The system consists mainly of using the CNN to extract features from the raw pixel values. These selected features are then passed into an LCS where the classification and rule set is outputted. This system uses the Filter feature selection method. This was chosen because of the simplicity of its implementation, efficiency, and robustness to overfitting. 
+
+The output file created from the CNN (see Appendix ref for example) contained the class (1 = Rectangle, 2 = Ellipse, 3 = Line, 4 = Triangle) with corresponding scores (likelihood of identified object being a class) and regions of interest displayed in the format of bounding boxes (x1, y1, x2, y2). The relationships between the bounding boxes are calculated using the magnitude and angle of their left top corner value (x1, y1). 
+
+If there is only 1 class, then there are no relationships. However, when multiple classes are detected in the image, instead of mapping relationships with all relationships (many to many), relationships are linked to one object (1 to many) (shown in Figure ref). There are many ways to define which object to pick to relate all the relationships to. i.e. The largest bounding box object or the object with the highest probability score. 
+
+I have chosen to base all relationships of objects on the largest bounding box. This is because it should be the most consistent across the variations of images of the classes. These features are then configured in the WEKA format [ref]. 
+
 
 \chapter{Implementation, Evaluation and Discussion}
 The first objective mentioned in Section \ref{subsec:obj} has been implemented. The goal was to create methods for extracting and integrating features from layers in a DNN as input features to the LCS. This will determine whether the higher-level features extracted could enhance the performance on solving classification problems compared to raw features selected by the LCS. 
@@ -304,7 +347,7 @@ These rules cover majority of their phenotypes. However, a platypus (mammal) wou
 \subsubsection{Evaluation}
 I believe the rules generated are human readable??
 
-\subsection{Create a data set}
+\subsection{Create a data set for testing the CNN}
 \begin{itemize}
 	\item Create a bespoke image shape dataset. The dataset will contain simple shapes without confounding variables which introduce ambiguity and distraction. Using existing image datasets such as imagenet \cite{imagenet} will increase the complexity of analysing whether the features extracted will convey a rich meaning. The dataset will be evaluated on a CNN for shape classification where evaluation is measured by the accuracy of the unseen test sets.
 	
@@ -376,16 +419,17 @@ Figure \ref{fig:mnistseven} is an example of the classifications performed by th
 \begin{itemize}
 	\item Create a synthetic image datasets with more complex combinations of shapes. Objects include cups, spoons, forks, donuts and vases. The dataset will be used to evaluate whether the combined system can classify the dataset at a reasonable accuracy and can output human readable rules that are general.  
 \end{itemize}
-\subsection{Design}
-A dataset of common, inanimate objects was created by scrapping Google images using ref. This was done by writing a script which would return 100 Google images with Google searches such as "plain plate" or "mug". After using the scraping algorithm, the images were manually filtered for anomalies. The dataset contains 1000 images of dimension  128 X 128 is made up of a simple object such as a plate, donut, spoon, mug or fork. Of the 1000, 200 are original where transformations (rotation at 90, 180, 270 degrees and mirrored along the y-axis) are applied. Translation and scaling are transformations that are not applied to the dataset. This is because there should be efficient sizes and placements of the objects in the dataset. Images containing these features were discarded:
-
-This is actually feature selection :O
-\begin{itemize}
-\item multiple objects in the image
-\item bold non-continuous patterns on the object
-\item background that is not monotonous/homogeneous
-\item object is of similar colour and shade of background
-\end{itemize}
+This involves the method of:
+\begin{enumerate}
+	\item Using the Google image scrapper supplied by [ref].
+	\item Enter the phrase to Google: "mug", "spoon", "fork", "donut", "vase". In cases that the images returned where not representative of the phrase, "plain" would be added to the query.
+	\item Configuration of the image scrapper includes:
+		\begin{itemize}
+			\item Dimension: 128x128
+			\item Number of images returned: 100
+		\end{itemize}
+	\item Apply transformations: rotate 90, 180, 270 degrees, flip along y-axis
+\end{enumerate}
 
 \subsection{Discussion}
 Feature Selection Bias??? Human error
@@ -399,20 +443,12 @@ This method of collecting images for this synthetic dataset has limitations wher
 Refer to Appendix [ref] for a sample of the dataset 
 mention different types of spoons, metal, plastic, serving etc.
 
+
 \section{Refine System}
 \begin{itemize}
 	\item Refine the system to improve the accuracy: involves filters before and math after
 	\item Construct embedded, filter or wrapper feature selection methods. These feature selection methods are defined as methods which embed the selection within the basic induction algorithm, methods which use feature selection to filter features passed to induction, and methods that treat feature selection as a wrapper around the induction process \cite{blum1997selection}.
 \end{itemize}
-
-\subsection{Design: CNN Model}
-There have been many modifications in the CNN model in improving the classification accuracy. CNNs perform well when classifying images that have easy to identify features where the dataset showcase many similiar instances of features. However, when solving real world problems, orientation aspects like rotation and tilt become a problem when they are not represented in the dataset. This can be a problem when it is difficult in finding a large variety of instances which represent the objects we are classifying.
-
-
-Mask RCNN is a recent modification of the CNN model where it is known for object segmentation. 
-Capsule Networks is also a recent architecture of CNN known to be resilient at handling types of visual stimulus and encoding high level features like pose (orientation, translation, position), deformation, velocity, texture, hue etc. Both architectures contain many layers and encapsulates high level representations of features in order to have high accuracies in classifying difficult domains.
-
-Both architectures have advantages and disadvantages. For example, Capsule Networks require a large amount for memory to store the different capsules. Capsules are nested set of neural layers. Because they are layers within layers, they employ another layer of dimension to create a model compared to traditional CNNs. This meant that training can be slow when using an older GPU. As Mask RCNN's architecture utilises 2 CNNs one after the other, the dimensionality of model representations is the same as a traditional CNN. Hence, Mask RCNNs were decided as the CNN model. 
  
 
 \subsection{Implementation Mask RCNN}
@@ -438,7 +474,7 @@ The learning rate of the training process is 0.002. As the weights first initial
 
 
 \subsection{Filters}
-Discuss
+Discuss why we need filters
 \subsubsection{Low-pass Operator}
 
 Python's cv2 image processing library was used to apply the low-pass filter. The procedure that I used is similar to using a mean filter, which consists of
@@ -493,4 +529,4 @@ Due to many ML techniques being stochastic, including LCSs, further tests may be
 
 \chapter{Conclusion and Future Work}
 
-
+\chapter{Appendix}
